@@ -194,7 +194,7 @@ def run_clang_format_diff(args, file):
             ),
             errs,
         )
-    return make_diff(file, original, outs), errs
+    return make_diff(file, original, outs), errs, file
 
 
 def bold_red(s):
@@ -385,9 +385,11 @@ def main():
         pool = multiprocessing.Pool(njobs)
         it = pool.imap_unordered(
             partial(run_clang_format_diff_wrapper, args), files)
+
+    diff_files = []
     while True:
         try:
-            outs, errs = next(it)
+            outs, errs, file = next(it)
         except StopIteration:
             break
         except DiffError as e:
@@ -408,14 +410,27 @@ def main():
             sys.stderr.writelines(errs)
             if outs == []:
                 continue
+            else:
+                diff_files.append(file)
             if not args.inplace:
                 if not args.quiet:
                     print_diff(outs, use_color=colored_stdout)
                 if retcode == ExitStatus.SUCCESS:
                     retcode = ExitStatus.DIFF
 
-    return retcode
+    if retcode > ExitStatus.SUCCESS:
+        with open(os.environ['GITHUB_STEP_SUMMARY'], 'a') as fh:
+            print('## Status: `clang-format` Check Failed.', file=fh)
+            print('The following files require formatting:', file=fh)
+            print('```', file=fh)
+            for ff in diff_files:
+                print(f'{ff}', file=fh)
+            print('```', file=fh)
+    else:
+        with open(os.environ['GITHUB_STEP_SUMMARY'], 'a') as fh:
+            print('## Status: `clang-format` Check Passed!', file=fh)
 
+    return retcode
 
 if __name__ == '__main__':
     sys.exit(main())
