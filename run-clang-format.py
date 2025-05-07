@@ -194,7 +194,7 @@ def run_clang_format_diff(args, file):
             ),
             errs,
         )
-    return make_diff(file, original, outs), errs, file
+    return make_diff(file, original, outs), errs, file, invocation
 
 
 def bold_red(s):
@@ -370,6 +370,10 @@ def main():
 
     if not args.quiet:
       print('Processing %s files: %s' % (len(files), ', '.join(files)))
+      print()
+      print(f'Invoking clang-format as: '
+            + f'{os.path.basename(args.clang_format_executable)} '
+            + f'--style={args.style} <path-to-file>')
 
     njobs = args.j
     if njobs == 0:
@@ -389,7 +393,7 @@ def main():
     diff_files = []
     while True:
         try:
-            outs, errs, file = next(it)
+            outs, errs, file, invocation = next(it)
         except StopIteration:
             break
         except DiffError as e:
@@ -426,6 +430,12 @@ def main():
             for ff in diff_files:
                 print(f'{ff}', file=fh)
             print('```', file=fh)
+            print('', file=fh)
+            print(f'Execute `{os.path.basename(args.clang_format_executable)} '
+                  + f'--style={args.style} <path-to-file>` to print '
+                  + f'formatted file to `stdout`.', file=fh)
+            print('Include the `-i` (in-place) option to replace the original '
+                  + 'file with the formatted version.', file=fh)
     else:
         with open(os.environ['GITHUB_STEP_SUMMARY'], 'a') as fh:
             print('## Status: `clang-format` Check Passed!', file=fh)
