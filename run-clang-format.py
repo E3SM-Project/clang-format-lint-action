@@ -194,7 +194,7 @@ def run_clang_format_diff(args, file):
             ),
             errs,
         )
-    return make_diff(file, original, outs), errs, file, invocation
+    return make_diff(file, original, outs), errs, file
 
 
 def bold_red(s):
@@ -393,7 +393,7 @@ def main():
     diff_files = []
     while True:
         try:
-            outs, errs, file, invocation = next(it)
+            outs, errs, file = next(it)
         except StopIteration:
             break
         except DiffError as e:
