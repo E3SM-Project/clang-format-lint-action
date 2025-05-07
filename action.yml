@@ -29,6 +29,9 @@ inputs:
     description: 'Just fix files (`clang-format -i`) instead of returning a diff'
     required: false
     default: False
+outputs:
+  files:
+    description: 'files that fail clang-format'
 runs:
   using: 'docker'
   image: 'Dockerfile'
