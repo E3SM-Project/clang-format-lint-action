@@ -437,11 +437,17 @@ def main():
                     print(f'{ff}', file=fh)
                 print('```', file=fh)
                 print('', file=fh)
-                print(f'Execute `{os.path.basename(args.clang_format_executable)} '
-                      + f'--style={args.style} <path-to-file>` to print '
-                      + f'formatted file to `stdout`.', file=fh)
-                print('Include the `-i` (in-place) option to replace the original '
-                      + 'file with the formatted version.', file=fh)
+                print('To format all of these files at once, download the '
+                      + 'patch file below, `clang-format-patch_[...].diff`, '
+                      + 'from the ***Artifacts*** section.', file=fh)
+                print('Note that it may take a moment for the file to appear '
+                      + 'or may require reloading the page.', file=fh)
+                print('', file=fh)
+                print('To apply the patch containing the formatting edits, '
+                      + 'execute `git apply <patch-file>` from your local E3SM '
+                      + 'branch.', file=fh)
+                print('Then commit the changes and push to your remote branch.',
+                      file=fh)
         else:
             with open(os.environ['GITHUB_STEP_SUMMARY'], 'a') as fh:
                 print('## Status: `clang-format` Check Passed!', file=fh)
