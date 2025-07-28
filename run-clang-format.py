@@ -428,7 +428,7 @@ def main():
                     retcode = ExitStatus.DIFF
 
     if args.write_summary:
-        if retcode > ExitStatus.SUCCESS:
+        if retcode != ExitStatus.SUCCESS:
             with open(os.environ['GITHUB_STEP_SUMMARY'], 'a') as fh:
                 print('## Status: `clang-format` Check Failed.', file=fh)
                 print('The following files require formatting:', file=fh)
