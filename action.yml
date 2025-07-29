@@ -29,6 +29,10 @@ inputs:
     description: 'Just fix files (`clang-format -i`) instead of returning a diff'
     required: false
     default: False
+  write_summary:
+    description: 'Write summary of Pass or Fail and failing files to GITHUB_STEP_SUMMARY'
+    required: false
+    default: True
 outputs:
   files:
     description: 'files that fail clang-format'
@@ -50,3 +54,5 @@ runs:
     - --exclude
     - ${{ inputs.exclude }}
     - ${{ inputs.source }}
+    - --write_summary
+    - ${{ inputs.write_summary }}
